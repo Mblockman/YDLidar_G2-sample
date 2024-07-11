@@ -2,7 +2,7 @@ import serial
 import struct
 import time
 import math
-import msvcrt
+import msvcrt #windows 용 처리루틴 라즈베리에서는 삭제처리해야함
 
 LIDAR_CMD_SYNC_BYTE = 0xA5
 LIDAR_CMD_STOP = 0x65
@@ -146,6 +146,7 @@ class G2Lidar:
     def waitScanData(self, timeout=DEFAULT_TIMEOUT):
         start_time = time.time()
         scan_response = bytearray()
+        data_dict = {}
         recv_pos = 0
 
         while (time.time() - start_time) < timeout / 1000.0:
@@ -291,12 +292,14 @@ if __name__ == "__main__":
 
         _ = lidar.waitScanData()
         while True:
+            #windows 용 처리루틴 라즈베리에서는 삭제처리해야함
             if msvcrt.kbhit():
                 key = msvcrt.getch().decode('utf-8')
                 if key.lower() == 'q':
                     lidar.stop()
                     print("Exiting...")
                     break
+                    
             scan_data = lidar.scanData()
             if scan_data is not None:
                 if lidar.process_lidar_sumCheck(scan_data):
